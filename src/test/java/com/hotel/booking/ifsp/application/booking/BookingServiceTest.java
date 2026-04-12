@@ -76,4 +76,22 @@ class BookingServiceTest {
                 .isInstanceOf(GuestNotFoundException.class);
         verify(bookingRepository, never()).save(any(Booking.class));
     }
+
+    @Test
+    @DisplayName("Should throw RoomNotAvailableException when no room is available for the requested period")
+    void shouldThrowRoomNotAvailableExceptionWhenRoomIsUnavailable() {
+        GuestId guestId = new GuestId(UUID.randomUUID());
+        Guest guest = new Guest(guestId, "João Silva", new CPF("529.982.247-25"));
+        RoomCategory category = RoomCategory.STANDARD;
+        Period period = new Period(
+                LocalDate.now().plusDays(1),
+                LocalDate.now().plusDays(5)
+        );
+        when(guestRepository.findById(guestId)).thenReturn(Optional.of(guest));
+        when(bookingRepository.isRoomAvailable(category, period)).thenReturn(false);
+
+        assertThatThrownBy(() -> bookingService.registerBooking(guestId, category, period))
+                .isInstanceOf(RoomNotAvailableException.class);
+        verify(bookingRepository, never()).save(any(Booking.class));
+    }
 }
