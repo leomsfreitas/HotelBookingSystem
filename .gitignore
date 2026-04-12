@@ -9,9 +9,11 @@ target/
 .idea/jarRepositories.xml
 .idea/compiler.xml
 .idea/libraries/
+.claude/
 *.iws
 *.iml
 *.ipr
+
 
 ### Eclipse ###
 .apt_generated
@@ -37,3 +39,4 @@ build/
 
 ### Mac OS ###
 .DS_Store
+
