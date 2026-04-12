@@ -101,4 +101,13 @@ class BookingQueryServiceTest {
         assertThat(result.roomCategory()).isEqualTo(RoomCategory.STANDARD);
     }
 
+    @Test
+    @DisplayName("Should return period with check-in and check-out when booking is queried")
+    void shouldReturnPeriodWhenBookingIsQueried() {
+        BookingDetails result = bookingQueryService.findBooking(booking.getId());
+
+        assertThat(result.period().checkIn()).isEqualTo(period.checkIn());
+        assertThat(result.period().checkOut()).isEqualTo(period.checkOut());
+    }
+
 }
