@@ -110,4 +110,12 @@ class BookingQueryServiceTest {
         assertThat(result.period().checkOut()).isEqualTo(period.checkOut());
     }
 
+    @Test
+    @DisplayName("Should return current booking status when booking is queried")
+    void shouldReturnBookingStatusWhenBookingIsQueried() {
+        BookingDetails result = bookingQueryService.findBooking(booking.getId());
+
+        assertThat(result.status()).isEqualTo(BookingStatus.PENDING);
+    }
+
 }
