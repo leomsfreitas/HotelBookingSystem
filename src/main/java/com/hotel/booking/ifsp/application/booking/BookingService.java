@@ -10,6 +10,8 @@ import com.hotel.booking.ifsp.domain.guest.GuestId;
 import com.hotel.booking.ifsp.domain.guest.GuestRepository;
 import com.hotel.booking.ifsp.domain.room.RoomCategory;
 
+import java.util.Objects;
+
 public class BookingService {
 
     private final GuestRepository guestRepository;
@@ -21,6 +23,10 @@ public class BookingService {
     }
 
     public BookingId registerBooking(GuestId guestId, RoomCategory roomCategory, Period period) {
+        Objects.requireNonNull(guestId, "Guest ID cannot be null");
+        Objects.requireNonNull(roomCategory, "Room category cannot be null");
+        Objects.requireNonNull(period, "Period cannot be null");
+
         guestRepository.findById(guestId)
                 .orElseThrow(() -> new GuestNotFoundException(
                         "Guest not found with id: " + guestId.value()));
