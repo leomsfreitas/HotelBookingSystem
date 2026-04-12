@@ -59,4 +59,14 @@ class BookingQueryServiceTest {
         assertThat(result).isNotNull();
         assertThat(result.bookingId()).isEqualTo(booking.getId());
     }
+
+    @Test
+    @DisplayName("Should throw BookingNotFoundException when booking does not exist")
+    void shouldThrowBookingNotFoundExceptionWhenBookingDoesNotExist() {
+        BookingId unknownId = BookingId.generate();
+        when(bookingRepository.findById(unknownId)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> bookingQueryService.findBooking(unknownId))
+                .isInstanceOf(BookingNotFoundException.class);
+    }
 }
