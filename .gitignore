@@ -9,20 +9,9 @@ target/
 .idea/jarRepositories.xml
 .idea/compiler.xml
 .idea/libraries/
-.claude/
 *.iws
 *.iml
 *.ipr
-
-
-### Eclipse ###
-.apt_generated
-.classpath
-.factorypath
-.project
-.settings
-.springBeans
-.sts4-cache
 
 ### NetBeans ###
 /nbproject/private/
@@ -33,9 +22,6 @@ target/
 build/
 !**/src/main/**/build/
 !**/src/test/**/build/
-
-### VS Code ###
-.vscode/
 
 ### Mac OS ###
 .DS_Store
