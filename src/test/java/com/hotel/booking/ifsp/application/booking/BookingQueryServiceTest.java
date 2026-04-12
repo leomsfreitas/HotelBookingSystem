@@ -118,4 +118,14 @@ class BookingQueryServiceTest {
         assertThat(result.status()).isEqualTo(BookingStatus.PENDING);
     }
 
+    @Test
+    @DisplayName("Should return CANCELLED status when cancelled booking is queried")
+    void shouldReturnCancelledStatusWhenCancelledBookingIsQueried() {
+        booking.cancel();
+
+        BookingDetails result = bookingQueryService.findBooking(booking.getId());
+
+        assertThat(result.status()).isEqualTo(BookingStatus.CANCELLED);
+    }
+
 }
