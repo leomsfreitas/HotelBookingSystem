@@ -69,4 +69,11 @@ class BookingQueryServiceTest {
         assertThatThrownBy(() -> bookingQueryService.findBooking(unknownId))
                 .isInstanceOf(BookingNotFoundException.class);
     }
+
+    @Test
+    @DisplayName("Should throw NullPointerException when booking ID is null")
+    void shouldThrowNullPointerExceptionWhenBookingIdIsNull() {
+        assertThatThrownBy(() -> bookingQueryService.findBooking(null))
+                .isInstanceOf(NullPointerException.class);
+    }
 }
