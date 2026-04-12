@@ -43,4 +43,18 @@ class BookingTest {
 
         assertThat(booking.getTotalValue()).isEqualByComparingTo(new BigDecimal("750.00"));
     }
+
+    @Test
+    @DisplayName("Should set initial booking status as PENDING when booking is created")
+    void shouldSetInitialStatusAsPending() {
+        GuestId guestId = new GuestId(UUID.randomUUID());
+        Period period = new Period(
+                LocalDate.now().plusDays(1),
+                LocalDate.now().plusDays(5)
+        );
+
+        Booking booking = Booking.create(guestId, RoomCategory.STANDARD, period);
+
+        assertThat(booking.getStatus()).isEqualTo(BookingStatus.PENDING);
+    }
 }
