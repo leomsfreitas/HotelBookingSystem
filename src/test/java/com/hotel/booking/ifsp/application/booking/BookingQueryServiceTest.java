@@ -85,4 +85,12 @@ class BookingQueryServiceTest {
         assertThat(result.guestName()).isEqualTo("João Silva");
     }
 
+    @Test
+    @DisplayName("Should return guest CPF when booking is queried")
+    void shouldReturnGuestCpfWhenBookingIsQueried() {
+        BookingDetails result = bookingQueryService.findBooking(booking.getId());
+
+        assertThat(result.guestCpf()).isEqualTo("529.982.247-25");
+    }
+
 }
