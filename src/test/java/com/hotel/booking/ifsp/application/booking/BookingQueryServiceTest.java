@@ -128,4 +128,14 @@ class BookingQueryServiceTest {
         assertThat(result.status()).isEqualTo(BookingStatus.CANCELLED);
     }
 
+    @Test
+    @DisplayName("Should return COMPLETED status when completed booking is queried")
+    void shouldReturnCompletedStatusWhenCompletedBookingIsQueried() {
+        booking.complete();
+
+        BookingDetails result = bookingQueryService.findBooking(booking.getId());
+
+        assertThat(result.status()).isEqualTo(BookingStatus.COMPLETED);
+    }
+
 }
