@@ -93,4 +93,12 @@ class BookingQueryServiceTest {
         assertThat(result.guestCpf()).isEqualTo("529.982.247-25");
     }
 
+    @Test
+    @DisplayName("Should return room category when booking is queried")
+    void shouldReturnRoomCategoryWhenBookingIsQueried() {
+        BookingDetails result = bookingQueryService.findBooking(booking.getId());
+
+        assertThat(result.roomCategory()).isEqualTo(RoomCategory.STANDARD);
+    }
+
 }
