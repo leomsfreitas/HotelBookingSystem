@@ -78,6 +78,19 @@ class BookingServiceTest {
     }
 
     @Test
+    @DisplayName("Should throw NullPointerException when guest ID is null")
+    void shouldThrowNullPointerExceptionWhenGuestIdIsNull() {
+        RoomCategory category = RoomCategory.STANDARD;
+        Period period = new Period(
+                LocalDate.now().plusDays(1),
+                LocalDate.now().plusDays(5)
+        );
+
+        assertThatThrownBy(() -> bookingService.registerBooking(null, category, period))
+                .isInstanceOf(NullPointerException.class);
+    }
+
+    @Test
     @DisplayName("Should throw RoomNotAvailableException when no room is available for the requested period")
     void shouldThrowRoomNotAvailableExceptionWhenRoomIsUnavailable() {
         GuestId guestId = new GuestId(UUID.randomUUID());
