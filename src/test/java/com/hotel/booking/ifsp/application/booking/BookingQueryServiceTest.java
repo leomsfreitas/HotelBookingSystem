@@ -76,4 +76,13 @@ class BookingQueryServiceTest {
         assertThatThrownBy(() -> bookingQueryService.findBooking(null))
                 .isInstanceOf(NullPointerException.class);
     }
+
+    @Test
+    @DisplayName("Should return guest name when booking is queried")
+    void shouldReturnGuestNameWhenBookingIsQueried() {
+        BookingDetails result = bookingQueryService.findBooking(booking.getId());
+
+        assertThat(result.guestName()).isEqualTo("João Silva");
+    }
+
 }
