@@ -85,4 +85,13 @@ class BookingUpdateServiceTest {
         assertThatThrownBy(() -> bookingUpdateService.updateBooking(booking.getId(), RoomCategory.STANDARD, null))
                 .isInstanceOf(NullPointerException.class);
     }
+
+    @Test
+    @DisplayName("Should throw NullPointerException when new room category is null")
+    void shouldThrowNullPointerExceptionWhenNewRoomCategoryIsNull() {
+        Period newPeriod = new Period(LocalDate.now().plusDays(10), LocalDate.now().plusDays(15));
+
+        assertThatThrownBy(() -> bookingUpdateService.updateBooking(booking.getId(), null, newPeriod))
+                .isInstanceOf(NullPointerException.class);
+    }
 }
