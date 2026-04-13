@@ -10,9 +10,9 @@ public class Booking {
 
     private final BookingId id;
     private final GuestId guestId;
-    private final RoomCategory roomCategory;
-    private final Period period;
-    private final BigDecimal totalValue;
+    private RoomCategory roomCategory;
+    private Period period;
+    private BigDecimal totalValue;
     private BookingStatus status;
 
     private Booking(BookingId id, GuestId guestId, RoomCategory roomCategory,
@@ -41,6 +41,23 @@ public class Booking {
                 totalValue,
                 BookingStatus.PENDING
         );
+    }
+
+    public void update(RoomCategory newRoomCategory, Period newPeriod) {
+        Objects.requireNonNull(newRoomCategory, "Room category cannot be null");
+        Objects.requireNonNull(newPeriod, "Period cannot be null");
+
+        if (status == BookingStatus.CANCELLED) {
+            throw new IllegalStateException("Cannot update a cancelled booking");
+        }
+        if (status == BookingStatus.COMPLETED) {
+            throw new IllegalStateException("Cannot update a completed booking");
+        }
+
+        this.roomCategory = newRoomCategory;
+        this.period = newPeriod;
+        this.totalValue = newRoomCategory.getDailyRate()
+                .multiply(BigDecimal.valueOf(newPeriod.numberOfDays()));
     }
 
     public BookingId getId() { return id; }
