@@ -69,4 +69,13 @@ class BookingUpdateServiceTest {
                 .isInstanceOf(BookingNotFoundException.class);
         verify(bookingRepository, never()).save(any(Booking.class));
     }
+
+    @Test
+    @DisplayName("Should throw NullPointerException when booking ID is null")
+    void shouldThrowNullPointerExceptionWhenBookingIdIsNull() {
+        Period newPeriod = new Period(LocalDate.now().plusDays(10), LocalDate.now().plusDays(15));
+
+        assertThatThrownBy(() -> bookingUpdateService.updateBooking(null, RoomCategory.STANDARD, newPeriod))
+                .isInstanceOf(NullPointerException.class);
+    }
 }
