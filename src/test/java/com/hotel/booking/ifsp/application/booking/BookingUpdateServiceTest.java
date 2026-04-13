@@ -57,4 +57,16 @@ class BookingUpdateServiceTest {
         assertThat(result.getPeriod()).isEqualTo(newPeriod);
         verify(bookingRepository).save(any(Booking.class));
     }
+
+    @Test
+    @DisplayName("Should throw BookingNotFoundException when booking does not exist")
+    void shouldThrowBookingNotFoundExceptionWhenBookingDoesNotExist() {
+        BookingId unknownId = BookingId.generate();
+        Period newPeriod = new Period(LocalDate.now().plusDays(10), LocalDate.now().plusDays(15));
+        when(bookingRepository.findById(unknownId)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> bookingUpdateService.updateBooking(unknownId, RoomCategory.STANDARD, newPeriod))
+                .isInstanceOf(BookingNotFoundException.class);
+        verify(bookingRepository, never()).save(any(Booking.class));
+    }
 }
