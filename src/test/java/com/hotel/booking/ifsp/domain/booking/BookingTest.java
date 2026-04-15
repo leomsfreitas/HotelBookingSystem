@@ -135,4 +135,22 @@ class BookingTest {
                 .isInstanceOf(IllegalStateException.class)
                 .hasMessage("Cannot complete a cancelled booking");
     }
+
+    @Test
+    @DisplayName("Should preserve all original booking data (Guest, Category, Period, Value) after cancellation")
+    void shouldPreserveOriginalDataAfterCancellation() {
+        GuestId guestId = new GuestId(java.util.UUID.randomUUID());
+        RoomCategory category = RoomCategory.DELUXE;
+        Period period = new Period(java.time.LocalDate.now().plusDays(1), java.time.LocalDate.now().plusDays(5));
+        Booking booking = Booking.create(guestId, category, period);
+        java.math.BigDecimal originalValue = booking.getTotalValue();
+
+        booking.cancel();
+
+        assertThat(booking.getStatus()).isEqualTo(BookingStatus.CANCELLED);
+        assertThat(booking.getGuestId()).isEqualTo(guestId);
+        assertThat(booking.getRoomCategory()).isEqualTo(category);
+        assertThat(booking.getPeriod()).isEqualTo(period);
+        assertThat(booking.getTotalValue()).isEqualByComparingTo(originalValue);
+    }
 }
