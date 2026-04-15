@@ -23,6 +23,10 @@ public class BookingUpdateService {
         Objects.requireNonNull(newRoomCategory, "Room category cannot be null");
         Objects.requireNonNull(newPeriod, "Period cannot be null");
 
+        if (newPeriod.checkIn().isBefore(java.time.LocalDate.now())) {
+            throw new IllegalArgumentException("Cannot update booking to a past period");
+        }
+
         Booking booking = bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new BookingNotFoundException(
                         "Booking not found with id: " + bookingId.value()));
