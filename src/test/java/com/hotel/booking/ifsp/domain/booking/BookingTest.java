@@ -109,4 +109,18 @@ class BookingTest {
                 .isInstanceOf(IllegalStateException.class)
                 .hasMessage("Cannot cancel a completed booking");
     }
+
+    @Test
+    @DisplayName("Should throw IllegalStateException when trying to update a cancelled booking")
+    void shouldThrowExceptionWhenUpdatingCancelledBooking() {
+        Booking booking = Booking.create(new GuestId(UUID.randomUUID()), RoomCategory.STANDARD, 
+                new Period(LocalDate.now().plusDays(1), LocalDate.now().plusDays(3)));
+        booking.cancel();
+        
+        Period newPeriod = new Period(LocalDate.now().plusDays(5), LocalDate.now().plusDays(8));
+        
+        assertThatThrownBy(() -> booking.update(RoomCategory.DELUXE, newPeriod))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessage("Cannot update a cancelled booking");
+    }
 }
