@@ -1,6 +1,7 @@
 package com.hotel.booking.ifsp.application.booking;
 
 import com.hotel.booking.ifsp.domain.booking.*;
+import com.hotel.booking.ifsp.domain.exception.BookingNotFoundException;
 import com.hotel.booking.ifsp.domain.guest.GuestId;
 import com.hotel.booking.ifsp.domain.room.RoomCategory;
 import org.junit.jupiter.api.BeforeEach;
@@ -75,5 +76,18 @@ class BookingCheckInOutServiceTest {
         assertThatThrownBy(() -> service.checkIn(bookingCompleted.getId()))
                 .isInstanceOf(IllegalStateException.class)
                 .hasMessage("Can only check-in a pending booking");
+    }
+
+    @Test
+    @DisplayName("Should throw BookingNotFoundException when trying to check-in a non-existent booking")
+    void shouldThrowExceptionWhenCheckInBookingNotFound() {
+        BookingId unknownId = BookingId.generate();
+        when(bookingRepository.findById(unknownId)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> service.checkIn(unknownId))
+                .isInstanceOf(BookingNotFoundException.class)
+                .hasMessageContaining("Booking not found with id: " + unknownId.value());
+
+        verify(bookingRepository, never()).save(any());
     }
 }
