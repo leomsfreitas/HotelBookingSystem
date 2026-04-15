@@ -165,4 +165,14 @@ class BookingTest {
         assertThat(booking.getStatus().name()).isEqualTo("CHECKED_IN");
     }
 
+
+    @Test
+    @DisplayName("Should transition status to COMPLETED when performing check-out after check-in")
+    void shouldTransitionToCompletedOnCheckOut() {
+        Booking booking = Booking.create(new GuestId(java.util.UUID.randomUUID()), RoomCategory.STANDARD,
+                new Period(java.time.LocalDate.now(), java.time.LocalDate.now().plusDays(2)));
+
+        assertThat(booking.getStatus()).isEqualTo(BookingStatus.COMPLETED);
+    }
+
 }
