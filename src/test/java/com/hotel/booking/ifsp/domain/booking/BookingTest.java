@@ -159,29 +159,31 @@ class BookingTest {
     void shouldTransitionToCheckedIn() {
         Booking booking = Booking.create(new GuestId(java.util.UUID.randomUUID()), RoomCategory.STANDARD, 
                 new Period(java.time.LocalDate.now(), java.time.LocalDate.now().plusDays(2)));
-
+        
         booking.checkIn();
         
         assertThat(booking.getStatus().name()).isEqualTo("CHECKED_IN");
     }
 
-
     @Test
     @DisplayName("Should transition status to COMPLETED when performing check-out after check-in")
     void shouldTransitionToCompletedOnCheckOut() {
-        Booking booking = Booking.create(new GuestId(java.util.UUID.randomUUID()), RoomCategory.STANDARD,
+        Booking booking = Booking.create(new GuestId(java.util.UUID.randomUUID()), RoomCategory.STANDARD, 
                 new Period(java.time.LocalDate.now(), java.time.LocalDate.now().plusDays(2)));
-
+        booking.checkIn(); 
+        booking.checkOut();
+        
         assertThat(booking.getStatus()).isEqualTo(BookingStatus.COMPLETED);
     }
-
 
     @Test
     @DisplayName("Should throw IllegalStateException when trying to check-out without check-in")
     void shouldThrowExceptionOnCheckOutWithoutCheckIn() {
-        Booking booking = Booking.create(new GuestId(java.util.UUID.randomUUID()), RoomCategory.STANDARD,
+        Booking booking = Booking.create(new GuestId(java.util.UUID.randomUUID()), RoomCategory.STANDARD, 
                 new Period(java.time.LocalDate.now(), java.time.LocalDate.now().plusDays(2)));
-
+        
+        assertThatThrownBy(booking::checkOut)
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessage("Cannot check-out a booking that has not been checked-in");
     }
-
 }

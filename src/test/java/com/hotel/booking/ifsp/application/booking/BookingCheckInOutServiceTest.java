@@ -9,8 +9,10 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
+import java.util.Optional;
 import java.util.UUID;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
 @Tag("UnitTest")
@@ -24,6 +26,7 @@ class BookingCheckInOutServiceTest {
     @BeforeEach
     void setUp() {
         bookingRepository = mock(BookingRepository.class);
+        service = new BookingCheckInOutService(bookingRepository);
         booking = Booking.create(new GuestId(UUID.randomUUID()), RoomCategory.STANDARD,
                 new Period(LocalDate.now(), LocalDate.now().plusDays(2)));
     }
@@ -31,5 +34,11 @@ class BookingCheckInOutServiceTest {
     @Test
     @DisplayName("Should process check-in successfully")
     void shouldProcessCheckIn() {
+        when(bookingRepository.findById(booking.getId())).thenReturn(Optional.of(booking));
+
+        service.checkIn(booking.getId());
+
+        assertThat(booking.getStatus().name()).isEqualTo("CHECKED_IN");
+        verify(bookingRepository).save(booking);
     }
 }
