@@ -94,4 +94,15 @@ class BookingUpdateServiceTest {
         assertThatThrownBy(() -> bookingUpdateService.updateBooking(booking.getId(), null, newPeriod))
                 .isInstanceOf(NullPointerException.class);
     }
+
+    @Test
+    @DisplayName("Should throw IllegalStateException when trying to update a cancelled booking")
+    void shouldThrowIllegalStateExceptionWhenUpdatingCancelledBooking() {
+        booking.cancel();
+        Period newPeriod = new Period(LocalDate.now().plusDays(10), LocalDate.now().plusDays(15));
+
+        assertThatThrownBy(() -> bookingUpdateService.updateBooking(booking.getId(), RoomCategory.DELUXE, newPeriod))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessage("Cannot update a cancelled booking");
+    }
 }
