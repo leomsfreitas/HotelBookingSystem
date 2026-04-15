@@ -56,6 +56,20 @@ class BookingCancelServiceTest {
                 .isInstanceOf(BookingNotFoundException.class);
 
         verify(bookingRepository, never()).save(any());
-    }
+        }
 
-}
+        @Test
+        @DisplayName("Should throw BookingNotFoundException with correct message when booking ID does not exist")
+        void shouldThrowExceptionWithDetailsWhenBookingNotFound() {
+        BookingId unknownId = BookingId.generate();
+        when(bookingRepository.findById(unknownId)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> bookingCancelService.cancelBooking(unknownId))
+                .isInstanceOf(BookingNotFoundException.class)
+                .hasMessageContaining("Booking not found with id: " + unknownId.value());
+
+        verify(bookingRepository, times(1)).findById(unknownId);
+        verify(bookingRepository, never()).save(any());
+        }
+        }
+
