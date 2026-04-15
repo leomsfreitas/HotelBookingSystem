@@ -98,5 +98,18 @@ class BookingCancelServiceTest {
 
         verify(bookingRepository, never()).save(any());
     }
+
+    @Test
+    @DisplayName("Should throw IllegalStateException when trying to cancel a completed booking through the service")
+    void shouldThrowIllegalStateExceptionOnCancellingCompletedBooking() {
+        booking.complete();
+        when(bookingRepository.findById(booking.getId())).thenReturn(Optional.of(booking));
+
+        assertThatThrownBy(() -> bookingCancelService.cancelBooking(booking.getId()))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessage("Cannot cancel a completed booking");
+
+        verify(bookingRepository, never()).save(any());
+    }
 }
 
