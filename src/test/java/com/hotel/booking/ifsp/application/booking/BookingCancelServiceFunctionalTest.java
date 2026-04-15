@@ -13,6 +13,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.mockito.Mockito.*;
 
 @Tag("FunctionalTest")
@@ -41,6 +42,22 @@ class BookingCancelServiceFunctionalTest {
 
         assertThat(booking.getStatus()).isEqualTo(BookingStatus.CANCELLED);
         verify(bookingRepository, times(1)).save(argThat(b -> b.getStatus() == BookingStatus.CANCELLED));
+    }
+
+    @Test
+    @DisplayName("Should reject cancellation process if booking is already in COMPLETED state")
+    void shouldRejectCancellationForCompletedBooking() {
+        BookingId bookingId = BookingId.generate();
+        Booking booking = Booking.create(new GuestId(UUID.randomUUID()), RoomCategory.STANDARD,
+                new Period(LocalDate.now().plusDays(1), LocalDate.now().plusDays(2)));
+        booking.complete();
+
+        when(bookingRepository.findById(bookingId)).thenReturn(Optional.of(booking));
+
+        assertThatThrownBy(() -> bookingCancelService.cancelBooking(bookingId))
+                .isInstanceOf(IllegalStateException.class);
+
+        verify(bookingRepository, never()).save(any());
     }
 
 }
