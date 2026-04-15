@@ -82,5 +82,21 @@ class BookingCancelServiceTest {
         verify(bookingRepository, never()).findById(any());
         verify(bookingRepository, never()).save(any());
     }
+
+    @Test
+    @DisplayName("Should throw IllegalStateException when trying to cancel an already cancelled booking through the service")
+    void shouldThrowIllegalStateExceptionOnDuplicateCancellation() {
+        when(bookingRepository.findById(booking.getId())).thenReturn(Optional.of(booking));
+        bookingCancelService.cancelBooking(booking.getId());
+
+        reset(bookingRepository);
+        when(bookingRepository.findById(booking.getId())).thenReturn(Optional.of(booking));
+
+        assertThatThrownBy(() -> bookingCancelService.cancelBooking(booking.getId()))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessage("Booking is already cancelled");
+
+        verify(bookingRepository, never()).save(any());
+    }
 }
 
