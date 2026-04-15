@@ -132,5 +132,16 @@ class BookingCancelServiceTest {
             savedBooking.getPeriod().equals(originalPeriod)
         ));
     }
+
+    @Test
+    @DisplayName("Should update status specifically to CANCELLED enum value")
+    void shouldUpdateStatusToCancelledEnum() {
+        when(bookingRepository.findById(booking.getId())).thenReturn(Optional.of(booking));
+        assertThat(booking.getStatus()).isEqualTo(BookingStatus.PENDING);
+
+        bookingCancelService.cancelBooking(booking.getId());
+
+        assertThat(booking.getStatus()).isSameAs(BookingStatus.CANCELLED);
+    }
 }
 
