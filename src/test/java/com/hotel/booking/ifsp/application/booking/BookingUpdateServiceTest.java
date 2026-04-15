@@ -5,6 +5,7 @@ import com.hotel.booking.ifsp.domain.booking.BookingId;
 import com.hotel.booking.ifsp.domain.booking.BookingRepository;
 import com.hotel.booking.ifsp.domain.booking.Period;
 import com.hotel.booking.ifsp.domain.exception.BookingNotFoundException;
+import com.hotel.booking.ifsp.domain.exception.RoomNotAvailableException;
 import com.hotel.booking.ifsp.domain.guest.CPF;
 import com.hotel.booking.ifsp.domain.guest.Guest;
 import com.hotel.booking.ifsp.domain.guest.GuestId;
@@ -109,25 +110,23 @@ class BookingUpdateServiceTest {
     }
 
     @Test
-    @DisplayName("Should throw IllegalStateException when trying to update a cancelled booking")
+    @DisplayName("Should throw RoomNotAvailableException when trying to update a cancelled booking")
     void shouldThrowIllegalStateExceptionWhenUpdatingCancelledBooking() {
         booking.cancel();
         Period newPeriod = new Period(LocalDate.now().plusDays(10), LocalDate.now().plusDays(15));
 
         assertThatThrownBy(() -> bookingUpdateService.updateBooking(booking.getId(), RoomCategory.DELUXE, newPeriod))
-                .isInstanceOf(IllegalStateException.class)
-                .hasMessage("Cannot update a cancelled booking");
+                .isInstanceOf(RoomNotAvailableException.class);
     }
 
     @Test
-    @DisplayName("Should throw IllegalStateException when trying to update a completed booking")
+    @DisplayName("Should throw RoomNotAvailableException when trying to update a completed booking")
     void shouldThrowIllegalStateExceptionWhenUpdatingCompletedBooking() {
         booking.complete();
         Period newPeriod = new Period(LocalDate.now().plusDays(10), LocalDate.now().plusDays(15));
 
         assertThatThrownBy(() -> bookingUpdateService.updateBooking(booking.getId(), RoomCategory.DELUXE, newPeriod))
-                .isInstanceOf(IllegalStateException.class)
-                .hasMessage("Cannot update a completed booking");
+                .isInstanceOf(RoomNotAvailableException.class);
     }
 
     @Test
