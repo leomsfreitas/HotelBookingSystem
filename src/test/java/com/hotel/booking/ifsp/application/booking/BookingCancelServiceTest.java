@@ -71,5 +71,16 @@ class BookingCancelServiceTest {
         verify(bookingRepository, times(1)).findById(unknownId);
         verify(bookingRepository, never()).save(any());
         }
-        }
+
+    @Test
+    @DisplayName("Should throw NullPointerException when booking ID is null during cancellation")
+    void shouldThrowNullPointerExceptionWhenBookingIdIsNull() {
+        assertThatThrownBy(() -> bookingCancelService.cancelBooking(null))
+                .isInstanceOf(NullPointerException.class)
+                .hasMessage("Booking ID cannot be null");
+
+        verify(bookingRepository, never()).findById(any());
+        verify(bookingRepository, never()).save(any());
+    }
+}
 
