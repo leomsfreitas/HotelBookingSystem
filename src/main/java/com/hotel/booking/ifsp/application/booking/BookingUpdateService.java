@@ -5,6 +5,7 @@ import com.hotel.booking.ifsp.domain.booking.BookingId;
 import com.hotel.booking.ifsp.domain.booking.BookingRepository;
 import com.hotel.booking.ifsp.domain.booking.Period;
 import com.hotel.booking.ifsp.domain.exception.BookingNotFoundException;
+import com.hotel.booking.ifsp.domain.exception.RoomNotAvailableException;
 import com.hotel.booking.ifsp.domain.room.RoomCategory;
 
 import java.util.Objects;
@@ -25,6 +26,11 @@ public class BookingUpdateService {
         Booking booking = bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new BookingNotFoundException(
                         "Booking not found with id: " + bookingId.value()));
+
+        if (!bookingRepository.isRoomAvailable(newRoomCategory, newPeriod)) {
+            throw new RoomNotAvailableException(
+                    "No room available for category " + newRoomCategory + " in the requested period");
+        }
 
         booking.update(newRoomCategory, newPeriod);
         return bookingRepository.save(booking);
