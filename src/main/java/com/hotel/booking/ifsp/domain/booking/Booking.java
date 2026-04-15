@@ -83,4 +83,18 @@ public class Booking {
         }
         this.status = BookingStatus.COMPLETED;
     }
+
+    public void checkIn() {
+        if (status != BookingStatus.PENDING) {
+            throw new IllegalStateException("Can only check-in a pending booking");
+        }
+        this.status = BookingStatus.CHECKED_IN;
+    }
+
+    public void checkOut() {
+        if (status != BookingStatus.CHECKED_IN) {
+            throw new IllegalStateException("Cannot check-out a booking that has not been checked-in");
+        }
+        this.status = BookingStatus.COMPLETED;
+    }
 }
