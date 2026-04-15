@@ -175,4 +175,13 @@ class BookingTest {
         assertThat(booking.getStatus()).isEqualTo(BookingStatus.COMPLETED);
     }
 
+
+    @Test
+    @DisplayName("Should throw IllegalStateException when trying to check-out without check-in")
+    void shouldThrowExceptionOnCheckOutWithoutCheckIn() {
+        Booking booking = Booking.create(new GuestId(java.util.UUID.randomUUID()), RoomCategory.STANDARD,
+                new Period(java.time.LocalDate.now(), java.time.LocalDate.now().plusDays(2)));
+
+    }
+
 }
