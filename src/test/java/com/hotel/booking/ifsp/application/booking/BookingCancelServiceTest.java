@@ -1,6 +1,7 @@
 package com.hotel.booking.ifsp.application.booking;
 
 import com.hotel.booking.ifsp.domain.booking.*;
+import com.hotel.booking.ifsp.domain.exception.BookingNotFoundException;
 import com.hotel.booking.ifsp.domain.guest.GuestId;
 import com.hotel.booking.ifsp.domain.room.RoomCategory;
 import org.junit.jupiter.api.BeforeEach;
@@ -13,6 +14,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.mockito.Mockito.*;
 
 
@@ -42,6 +44,18 @@ class BookingCancelServiceTest {
 
         assertThat(booking.getStatus()).isEqualTo(BookingStatus.CANCELLED);
         verify(bookingRepository).save(booking);
+    }
+
+    @Test
+    @DisplayName("Should throw BookingNotFoundException when cancelling a non-existent booking")
+    void shouldThrowExceptionWhenBookingNotFound() {
+        BookingId unknownId = BookingId.generate();
+        when(bookingRepository.findById(unknownId)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> bookingCancelService.cancelBooking(unknownId))
+                .isInstanceOf(BookingNotFoundException.class);
+
+        verify(bookingRepository, never()).save(any());
     }
 
 }
