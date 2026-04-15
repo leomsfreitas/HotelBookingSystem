@@ -57,4 +57,21 @@ class BookingTest {
 
         assertThat(booking.getStatus()).isEqualTo(BookingStatus.PENDING);
     }
+
+    @Test
+    @DisplayName("Should recalculate total value when room category and period are updated")
+    void shouldRecalculateValueOnUpdate() {
+        GuestId guestId = new GuestId(UUID.randomUUID());
+        Period oldPeriod = new Period(LocalDate.now().plusDays(1), LocalDate.now().plusDays(3));
+        Booking booking = Booking.create(guestId, RoomCategory.STANDARD, oldPeriod);
+        BigDecimal initialValue = booking.getTotalValue();
+
+        Period newPeriod = new Period(LocalDate.now().plusDays(5), LocalDate.now().plusDays(8));
+        booking.update(RoomCategory.DELUXE, newPeriod);
+
+        assertThat(booking.getTotalValue()).isNotEqualTo(initialValue);
+        BigDecimal expectedValue = RoomCategory.DELUXE.getDailyRate()
+                .multiply(BigDecimal.valueOf(newPeriod.numberOfDays()));
+        assertThat(booking.getTotalValue()).isEqualByComparingTo(expectedValue);
+    }
 }

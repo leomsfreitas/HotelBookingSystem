@@ -152,5 +152,19 @@ class BookingUpdateServiceTest {
 
         verify(bookingRepository, never()).save(any(Booking.class));
     }
+
+    @Test
+    @DisplayName("Should ensure the updated booking with new price is saved in the repository")
+    void shouldSaveBookingWithRecalculatedPrice() {
+        Period newPeriod = new Period(LocalDate.now().plusDays(5), LocalDate.now().plusDays(10)); // 5 dias
+        when(bookingRepository.isRoomAvailable(RoomCategory.DELUXE, newPeriod)).thenReturn(true);
+
+        Booking updatedBooking = bookingUpdateService.updateBooking(booking.getId(), RoomCategory.DELUXE, newPeriod);
+
+        java.math.BigDecimal expectedPrice = RoomCategory.DELUXE.getDailyRate().multiply(java.math.BigDecimal.valueOf(5));
+        
+        assertThat(updatedBooking.getTotalValue()).isEqualByComparingTo(expectedPrice);
+        verify(bookingRepository).save(any(Booking.class));
+    }
 }
 
