@@ -153,4 +153,16 @@ class BookingTest {
         assertThat(booking.getPeriod()).isEqualTo(period);
         assertThat(booking.getTotalValue()).isEqualByComparingTo(originalValue);
     }
+
+    @Test
+    @DisplayName("Should transition status to CHECKED_IN when performing check-in")
+    void shouldTransitionToCheckedIn() {
+        Booking booking = Booking.create(new GuestId(java.util.UUID.randomUUID()), RoomCategory.STANDARD, 
+                new Period(java.time.LocalDate.now(), java.time.LocalDate.now().plusDays(2)));
+
+        booking.checkIn();
+        
+        assertThat(booking.getStatus().name()).isEqualTo("CHECKED_IN");
+    }
+
 }
