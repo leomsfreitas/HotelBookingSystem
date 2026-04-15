@@ -13,6 +13,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.*;
 
 @Tag("UnitTest")
@@ -43,17 +44,6 @@ class BookingCheckInOutServiceTest {
     }
 
     @Test
-    @DisplayName("Should process check-in successfully")
-    void shouldProcessCheckIn() {
-        when(bookingRepository.findById(booking.getId())).thenReturn(Optional.of(booking));
-
-        service.checkIn(booking.getId());
-
-        assertThat(booking.getStatus().name()).isEqualTo("CHECKED_IN");
-        verify(bookingRepository).save(booking);
-    }
-
-    @Test
     @DisplayName("Should process check-out successfully")
     void shouldProcessCheckOut() {
         when(bookingRepository.findById(booking.getId())).thenReturn(Optional.of(booking));
@@ -63,5 +53,27 @@ class BookingCheckInOutServiceTest {
 
         assertThat(booking.getStatus()).isEqualTo(BookingStatus.COMPLETED);
         verify(bookingRepository, times(2)).save(booking);
+    }
+
+    @Test
+    @DisplayName("Should ensure check-in is only possible for PENDING bookings")
+    void shouldOnlyAllowCheckInForPendingBookings() {
+        booking.cancel();
+        when(bookingRepository.findById(booking.getId())).thenReturn(Optional.of(booking));
+        
+        assertThatThrownBy(() -> service.checkIn(booking.getId()))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessage("Can only check-in a pending booking");
+
+        GuestId guestId = new GuestId(UUID.randomUUID());
+        Booking bookingCompleted = Booking.create(guestId, RoomCategory.STANDARD, 
+                new Period(LocalDate.now(), LocalDate.now().plusDays(2)));
+        bookingCompleted.checkIn();
+        bookingCompleted.checkOut();
+        when(bookingRepository.findById(bookingCompleted.getId())).thenReturn(Optional.of(bookingCompleted));
+
+        assertThatThrownBy(() -> service.checkIn(bookingCompleted.getId()))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessage("Can only check-in a pending booking");
     }
 }
