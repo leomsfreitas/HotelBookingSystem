@@ -86,4 +86,27 @@ class BookingTest {
         assertThat(booking.getStatus()).isEqualTo(BookingStatus.CANCELLED);
     }
 
+    @Test
+    @DisplayName("Should throw IllegalStateException when cancelling an already cancelled booking")
+    void shouldThrowExceptionWhenCancellingAlreadyCancelled() {
+        Booking booking = Booking.create(new GuestId(UUID.randomUUID()), RoomCategory.STANDARD,
+                new Period(LocalDate.now().plusDays(1), LocalDate.now().plusDays(3)));
+        booking.cancel();
+
+        assertThatThrownBy(booking::cancel)
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessage("Booking is already cancelled");
+    }
+
+    @Test
+    @DisplayName("Should throw IllegalStateException when cancelling a completed booking")
+    void shouldThrowExceptionWhenCancellingCompleted() {
+        Booking booking = Booking.create(new GuestId(UUID.randomUUID()), RoomCategory.STANDARD,
+                new Period(LocalDate.now().plusDays(1), LocalDate.now().plusDays(3)));
+        booking.complete();
+
+        assertThatThrownBy(booking::cancel)
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessage("Cannot cancel a completed booking");
+    }
 }
