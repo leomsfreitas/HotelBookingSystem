@@ -166,5 +166,39 @@ class BookingUpdateServiceTest {
         assertThat(updatedBooking.getTotalValue()).isEqualByComparingTo(expectedPrice);
         verify(bookingRepository).save(any(Booking.class));
     }
+
+    @Test
+    @DisplayName("Should throw IllegalArgumentException when update period has check-out before check-in")
+    void shouldThrowIllegalArgumentExceptionWhenPeriodIsInvalid() {
+        LocalDate checkIn = LocalDate.now().plusDays(5);
+        LocalDate invalidCheckOut = LocalDate.now().plusDays(2);
+
+        assertThatThrownBy(() -> new Period(checkIn, invalidCheckOut))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Check-out must be after check-in");
+    }
+
+    @Test
+    @DisplayName("Should not allow updating the Guest ID of an existing booking")
+    void shouldNotAllowUpdatingGuestId() {
+        GuestId originalGuestId = booking.getGuestId();
+        Period newPeriod = new Period(LocalDate.now().plusDays(10), LocalDate.now().plusDays(15));
+        when(bookingRepository.isRoomAvailable(any(), any())).thenReturn(true);
+
+        Booking updated = bookingUpdateService.updateBooking(booking.getId(), RoomCategory.DELUXE, newPeriod);
+
+        assertThat(updated.getGuestId()).isEqualTo(originalGuestId);
+    }
+
+    @Test
+    @DisplayName("Should throw IllegalArgumentException when attempting to update to a past period")
+    void shouldThrowExceptionWhenUpdatingToPastPeriod() {
+        Period pastPeriod = new Period(LocalDate.now().minusDays(5), LocalDate.now().minusDays(2));
+        when(bookingRepository.isRoomAvailable(RoomCategory.STANDARD, pastPeriod)).thenReturn(true);
+
+        assertThatThrownBy(() -> bookingUpdateService.updateBooking(booking.getId(), RoomCategory.STANDARD, pastPeriod))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Cannot update booking to a past period");
+    }
 }
 
