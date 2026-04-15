@@ -111,5 +111,26 @@ class BookingCancelServiceTest {
 
         verify(bookingRepository, never()).save(any());
     }
+
+    @Test
+    @DisplayName("Should ensure all booking data is preserved when saved as CANCELLED for history")
+    void shouldPreserveDataWhenPersistingCancelledBooking() {
+        BookingId id = booking.getId();
+        GuestId originalGuestId = booking.getGuestId();
+        RoomCategory originalCategory = booking.getRoomCategory();
+        Period originalPeriod = booking.getPeriod();
+
+        when(bookingRepository.findById(id)).thenReturn(Optional.of(booking));
+
+        bookingCancelService.cancelBooking(id);
+
+        verify(bookingRepository).save(argThat(savedBooking ->
+            savedBooking.getId().equals(id) &&
+            savedBooking.getStatus() == BookingStatus.CANCELLED &&
+            savedBooking.getGuestId().equals(originalGuestId) &&
+            savedBooking.getRoomCategory() == originalCategory &&
+            savedBooking.getPeriod().equals(originalPeriod)
+        ));
+    }
 }
 
