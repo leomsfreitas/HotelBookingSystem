@@ -50,12 +50,25 @@ class BookingUpdateServiceTest {
     @DisplayName("Should update booking successfully when booking exists and new data is valid")
     void shouldUpdateBookingSuccessfully() {
         Period newPeriod = new Period(LocalDate.now().plusDays(10), LocalDate.now().plusDays(15));
+        when(bookingRepository.isRoomAvailable(any(RoomCategory.class), any(Period.class))).thenReturn(true);
 
         Booking result = bookingUpdateService.updateBooking(booking.getId(), RoomCategory.DELUXE, newPeriod);
 
         assertThat(result.getRoomCategory()).isEqualTo(RoomCategory.DELUXE);
         assertThat(result.getPeriod()).isEqualTo(newPeriod);
         verify(bookingRepository).save(any(Booking.class));
+    }
+
+    @Test
+    @DisplayName("Should throw RoomNotAvailableException when updating to an unavailable period/category")
+    void shouldThrowRoomNotAvailableExceptionWhenUpdatingToUnavailablePeriod() {
+        Period newPeriod = new Period(LocalDate.now().plusDays(10), LocalDate.now().plusDays(15));
+        when(bookingRepository.isRoomAvailable(RoomCategory.DELUXE, newPeriod)).thenReturn(false);
+
+        assertThatThrownBy(() -> bookingUpdateService.updateBooking(booking.getId(), RoomCategory.DELUXE, newPeriod))
+                .isInstanceOf(com.hotel.booking.ifsp.domain.exception.RoomNotAvailableException.class);
+
+        verify(bookingRepository, never()).save(any(Booking.class));
     }
 
     @Test
@@ -115,6 +128,29 @@ class BookingUpdateServiceTest {
         assertThatThrownBy(() -> bookingUpdateService.updateBooking(booking.getId(), RoomCategory.DELUXE, newPeriod))
                 .isInstanceOf(IllegalStateException.class)
                 .hasMessage("Cannot update a completed booking");
+    }
+
+    @Test
+    @DisplayName("Should verify room availability before updating booking (Success case)")
+    void shouldVerifyAvailabilityOnUpdateSuccess() {
+        Period newPeriod = new Period(LocalDate.now().plusDays(20), LocalDate.now().plusDays(25));
+        when(bookingRepository.isRoomAvailable(RoomCategory.STANDARD, newPeriod)).thenReturn(true);
+
+        bookingUpdateService.updateBooking(booking.getId(), RoomCategory.STANDARD, newPeriod);
+
+        verify(bookingRepository).isRoomAvailable(RoomCategory.STANDARD, newPeriod);
+    }
+
+    @Test
+    @DisplayName("Should throw RoomNotAvailableException when there is a date conflict")
+    void shouldThrowExceptionWhenUpdateHasConflict() {
+        Period conflictingPeriod = new Period(LocalDate.now().plusDays(2), LocalDate.now().plusDays(6));
+        when(bookingRepository.isRoomAvailable(RoomCategory.STANDARD, conflictingPeriod)).thenReturn(false);
+
+        assertThatThrownBy(() -> bookingUpdateService.updateBooking(booking.getId(), RoomCategory.STANDARD, conflictingPeriod))
+                .isInstanceOf(com.hotel.booking.ifsp.domain.exception.RoomNotAvailableException.class);
+
+        verify(bookingRepository, never()).save(any(Booking.class));
     }
 }
 
