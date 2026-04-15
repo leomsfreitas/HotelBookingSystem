@@ -74,4 +74,16 @@ class BookingTest {
                 .multiply(BigDecimal.valueOf(newPeriod.numberOfDays()));
         assertThat(booking.getTotalValue()).isEqualByComparingTo(expectedValue);
     }
+
+    @Test
+    @DisplayName("Should change status to CANCELLED when cancelling a pending booking")
+    void shouldCancelPendingBooking() {
+        Booking booking = Booking.create(new GuestId(UUID.randomUUID()), RoomCategory.STANDARD, 
+                new Period(LocalDate.now().plusDays(1), LocalDate.now().plusDays(3)));
+        
+        booking.cancel();
+        
+        assertThat(booking.getStatus()).isEqualTo(BookingStatus.CANCELLED);
+    }
+
 }
