@@ -27,6 +27,10 @@ public class BookingService {
         Objects.requireNonNull(roomCategory, "Room category cannot be null");
         Objects.requireNonNull(period, "Period cannot be null");
 
+        if (period.checkIn().isBefore(java.time.LocalDate.now())) {
+            throw new IllegalArgumentException("Cannot book a reservation in the past");
+        }
+
         guestRepository.findById(guestId)
                 .orElseThrow(() -> new GuestNotFoundException(
                         "Guest not found with id: " + guestId.value()));
