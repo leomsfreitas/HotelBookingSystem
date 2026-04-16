@@ -214,4 +214,17 @@ class BookingCheckInOutServiceTest {
                 .isInstanceOf(IllegalStateException.class);
     }
 
+    @Test
+    @DisplayName("Should throw IllegalStateException when checking out on an invalid date")
+    void shouldThrowExceptionWhenCheckingOutOnInvalidDate() {
+        LocalDate futureDate = LocalDate.now().plusDays(2);
+        Booking bookingFuture = Booking.create(new GuestId(UUID.randomUUID()), RoomCategory.STANDARD,
+                new Period(futureDate, futureDate.plusDays(3)));
+
+        bookingFuture.checkIn();
+        when(bookingRepository.findById(bookingFuture.getId())).thenReturn(Optional.of(bookingFuture));
+
+        assertThatThrownBy(() -> service.checkOut(bookingFuture.getId()))
+                .isInstanceOf(IllegalStateException.class);
+    }
 }
