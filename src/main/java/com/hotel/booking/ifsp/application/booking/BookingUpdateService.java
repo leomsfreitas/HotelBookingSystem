@@ -31,7 +31,7 @@ public class BookingUpdateService {
                 .orElseThrow(() -> new BookingNotFoundException(
                         "Booking not found with id: " + bookingId.value()));
 
-        if (!bookingRepository.isRoomAvailable(newRoomCategory, newPeriod)) {
+        if (!bookingRepository.isRoomAvailable(newRoomCategory, newPeriod, bookingId)) {
             throw new RoomNotAvailableException(
                     "No room available for category " + newRoomCategory + " in the requested period");
         }

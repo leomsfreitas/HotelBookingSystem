@@ -50,14 +50,14 @@ class BookingServiceTest {
                 LocalDate.now().plusDays(5)
         );
         when(guestRepository.findById(guestId)).thenReturn(Optional.of(guest));
-        when(bookingRepository.isRoomAvailable(category, period)).thenReturn(true);
+        when(bookingRepository.isRoomAvailable(category, period, null)).thenReturn(true);
         when(bookingRepository.save(any(Booking.class))).thenAnswer(inv -> inv.getArgument(0));
 
         BookingId result = bookingService.registerBooking(guestId, category, period);
 
         assertThat(result).isNotNull();
         assertThat(result.value()).isNotNull();
-        verify(bookingRepository).isRoomAvailable(category, period);
+        verify(bookingRepository).isRoomAvailable(category, period, null);
         verify(bookingRepository).save(any(Booking.class));
     }
 
@@ -114,7 +114,7 @@ class BookingServiceTest {
                 LocalDate.now().plusDays(5)
         );
         when(guestRepository.findById(guestId)).thenReturn(Optional.of(guest));
-        when(bookingRepository.isRoomAvailable(category, period)).thenReturn(false);
+        when(bookingRepository.isRoomAvailable(category, period, null)).thenReturn(false);
 
         assertThatThrownBy(() -> bookingService.registerBooking(guestId, category, period))
                 .isInstanceOf(RoomNotAvailableException.class);

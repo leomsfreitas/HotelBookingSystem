@@ -67,7 +67,7 @@ class BookingServiceFunctionalTest {
                 LocalDate.now().plusDays(2)
         );
         when(guestRepository.findById(guestId)).thenReturn(Optional.of(guest));
-        when(bookingRepository.isRoomAvailable(category, period)).thenReturn(true);
+        when(bookingRepository.isRoomAvailable(category, period, null)).thenReturn(true);
         when(bookingRepository.save(any(Booking.class))).thenAnswer(inv -> inv.getArgument(0));
 
         assertThatCode(() -> bookingService.registerBooking(guestId, category, period))
@@ -85,7 +85,7 @@ class BookingServiceFunctionalTest {
                 LocalDate.now().plusDays(5)
         );
         when(guestRepository.findById(guestId)).thenReturn(Optional.of(guest));
-        when(bookingRepository.isRoomAvailable(category, period)).thenReturn(false);
+        when(bookingRepository.isRoomAvailable(category, period, null)).thenReturn(false);
 
         assertThatThrownBy(() -> bookingService.registerBooking(guestId, category, period))
                 .isInstanceOf(RoomNotAvailableException.class);
@@ -102,7 +102,7 @@ class BookingServiceFunctionalTest {
                 LocalDate.now().plusDays(5)
         );
         when(guestRepository.findById(guestId)).thenReturn(Optional.of(guest));
-        when(bookingRepository.isRoomAvailable(category, period)).thenReturn(false);
+        when(bookingRepository.isRoomAvailable(category, period, null)).thenReturn(false);
 
         assertThatThrownBy(() -> bookingService.registerBooking(guestId, category, period))
                 .isInstanceOf(RoomNotAvailableException.class);
@@ -131,7 +131,7 @@ class BookingServiceFunctionalTest {
                 LocalDate.now().plusDays(5)
         );
         when(guestRepository.findById(guestId)).thenReturn(Optional.of(guest));
-        when(bookingRepository.isRoomAvailable(null, period)).thenReturn(true);
+        when(bookingRepository.isRoomAvailable(null, period, null)).thenReturn(true);
         when(bookingRepository.save(any(Booking.class))).thenAnswer(inv -> inv.getArgument(0));
 
         assertThatThrownBy(() -> bookingService.registerBooking(guestId, null, period))
