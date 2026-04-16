@@ -114,4 +114,17 @@ class BookingCheckInOutServiceTest {
 
         verify(bookingRepository, never()).save(any());
     }
+
+    @Test
+    @DisplayName("Should throw IllegalStateException when trying to perform check-in on an already CHECKED_IN booking")
+    void shouldThrowIllegalStateExceptionOnDuplicateCheckIn() {
+        when(bookingRepository.findById(booking.getId())).thenReturn(Optional.of(booking));
+        service.checkIn(booking.getId());
+
+        assertThatThrownBy(() -> service.checkIn(booking.getId()))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessage("Can only check-in a pending booking");
+
+        verify(bookingRepository, times(1)).save(any());
+    }
 }
