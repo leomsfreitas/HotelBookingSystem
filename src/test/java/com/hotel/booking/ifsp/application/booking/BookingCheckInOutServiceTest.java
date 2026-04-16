@@ -57,6 +57,18 @@ class BookingCheckInOutServiceTest {
     }
 
     @Test
+    @DisplayName("Should throw IllegalStateException when trying to check-out without prior check-in")
+    void shouldThrowIllegalStateExceptionWhenCheckingOutWithoutCheckIn() {
+        when(bookingRepository.findById(booking.getId())).thenReturn(Optional.of(booking));
+
+        assertThatThrownBy(() -> service.checkOut(booking.getId()))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessage("Cannot check-out a booking that has not been checked-in");
+
+        verify(bookingRepository, never()).save(any());
+    }
+
+    @Test
     @DisplayName("Should ensure check-in is only possible for PENDING bookings")
     void shouldOnlyAllowCheckInForPendingBookings() {
         booking.cancel();
