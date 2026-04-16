@@ -197,4 +197,18 @@ class BookingTest {
                 .isInstanceOf(IllegalStateException.class)
                 .hasMessage("Cannot complete a booking that has not been checked-in");
     }
+
+    @Test
+    @DisplayName("Should throw IllegalStateException when trying to update a checked-in booking")
+    void shouldThrowExceptionWhenUpdatingCheckedInBooking() {
+        Booking booking = Booking.create(new GuestId(java.util.UUID.randomUUID()), RoomCategory.STANDARD, 
+                new Period(java.time.LocalDate.now().plusDays(1), java.time.LocalDate.now().plusDays(3)));
+        booking.checkIn();
+        
+        Period newPeriod = new Period(java.time.LocalDate.now().plusDays(5), java.time.LocalDate.now().plusDays(8));
+        
+        assertThatThrownBy(() -> booking.update(RoomCategory.DELUXE, newPeriod))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessage("Cannot update a booking that is already checked-in");
+    }
 }
