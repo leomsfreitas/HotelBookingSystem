@@ -73,13 +73,13 @@ class BookingCheckInOutServiceTest {
     void shouldOnlyAllowCheckInForPendingBookings() {
         booking.cancel();
         when(bookingRepository.findById(booking.getId())).thenReturn(Optional.of(booking));
-        
+
         assertThatThrownBy(() -> service.checkIn(booking.getId()))
                 .isInstanceOf(IllegalStateException.class)
                 .hasMessage("Can only check-in a pending booking");
 
         GuestId guestId = new GuestId(UUID.randomUUID());
-        Booking bookingCompleted = Booking.create(guestId, RoomCategory.STANDARD, 
+        Booking bookingCompleted = Booking.create(guestId, RoomCategory.STANDARD,
                 new Period(LocalDate.now(), LocalDate.now().plusDays(2)));
         bookingCompleted.checkIn();
         bookingCompleted.checkOut();
@@ -175,5 +175,17 @@ class BookingCheckInOutServiceTest {
         verify(bookingRepository, never()).save(any());
     }
 
-}
+    @Test
+    @DisplayName("Should throw IllegalStateException when trying to perform check-out on an already COMPLETED booking")
+    void shouldThrowIllegalStateExceptionOnDuplicateCheckOut() {
+        when(bookingRepository.findById(booking.getId())).thenReturn(Optional.of(booking));
+        service.checkIn(booking.getId());
+        service.checkOut(booking.getId());
 
+        assertThatThrownBy(() -> service.checkOut(booking.getId()))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessage("Cannot check-out a booking that has not been checked-in");
+        verify(bookingRepository, times(2)).save(any());
+    }
+
+}
