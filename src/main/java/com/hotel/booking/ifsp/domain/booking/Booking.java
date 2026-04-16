@@ -81,6 +81,9 @@ public class Booking {
         if (status == BookingStatus.CANCELLED) {
             throw new IllegalStateException("Cannot complete a cancelled booking");
         }
+        if (status != BookingStatus.CHECKED_IN) {
+            throw new IllegalStateException("Cannot complete a booking that has not been checked-in");
+        }
         this.status = BookingStatus.COMPLETED;
     }
 
