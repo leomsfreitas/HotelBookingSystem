@@ -120,4 +120,20 @@ class BookingServiceTest {
                 .isInstanceOf(RoomNotAvailableException.class);
         verify(bookingRepository, never()).save(any(Booking.class));
     }
+
+    @Test
+    @DisplayName("Should throw IllegalArgumentException when booking dates are in the past")
+    void shouldThrowExceptionWhenBookingDatesAreInThePast() {
+        GuestId guestId = new GuestId(UUID.randomUUID());
+        RoomCategory category = RoomCategory.STANDARD;
+        Period pastPeriod = new Period(
+                LocalDate.now().minusDays(5),
+                LocalDate.now().minusDays(2)
+        );
+        when(guestRepository.findById(guestId)).thenReturn(Optional.of(new Guest(guestId, "João", new CPF("529.982.247-25"))));
+
+        assertThatThrownBy(() -> bookingService.registerBooking(guestId, category, pastPeriod))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Cannot book a reservation in the past");
+    }
 }
