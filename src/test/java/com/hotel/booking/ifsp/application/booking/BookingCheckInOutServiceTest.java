@@ -90,4 +90,15 @@ class BookingCheckInOutServiceTest {
 
         verify(bookingRepository, never()).save(any());
     }
+
+    @Test
+    @DisplayName("Should throw NullPointerException when booking ID is null during check-in")
+    void shouldThrowNullPointerExceptionWhenCheckInIdIsNull() {
+        assertThatThrownBy(() -> service.checkIn(null))
+                .isInstanceOf(NullPointerException.class)
+                .hasMessage("Booking ID cannot be null");
+
+        verify(bookingRepository, never()).findById(any());
+        verify(bookingRepository, never()).save(any());
+    }
 }
