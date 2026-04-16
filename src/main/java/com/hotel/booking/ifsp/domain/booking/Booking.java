@@ -53,6 +53,9 @@ public class Booking {
         if (status == BookingStatus.COMPLETED) {
             throw new IllegalStateException("Cannot update a completed booking");
         }
+        if (status == BookingStatus.CHECKED_IN) {
+            throw new IllegalStateException("Cannot update a booking that is already checked-in");
+        }
 
         this.roomCategory = newRoomCategory;
         this.period = newPeriod;
