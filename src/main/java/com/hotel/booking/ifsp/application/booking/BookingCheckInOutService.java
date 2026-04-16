@@ -5,6 +5,7 @@ import com.hotel.booking.ifsp.domain.booking.BookingId;
 import com.hotel.booking.ifsp.domain.booking.BookingRepository;
 import com.hotel.booking.ifsp.domain.exception.BookingNotFoundException;
 
+import java.time.LocalDate;
 import java.util.Objects;
 
 public class BookingCheckInOutService {
@@ -18,6 +19,11 @@ public class BookingCheckInOutService {
     public void checkIn(BookingId bookingId) {
         Objects.requireNonNull(bookingId, "Booking ID cannot be null");
         Booking booking = findBooking(bookingId);
+        
+        if (LocalDate.now().isBefore(booking.getPeriod().checkIn())) {
+            throw new IllegalStateException("Cannot check-in before the scheduled date");
+        }
+        
         booking.checkIn();
         bookingRepository.save(booking);
     }
@@ -25,6 +31,11 @@ public class BookingCheckInOutService {
     public void checkOut(BookingId bookingId) {
         Objects.requireNonNull(bookingId, "Booking ID cannot be null");
         Booking booking = findBooking(bookingId);
+
+        if (LocalDate.now().isBefore(booking.getPeriod().checkIn())) {
+            throw new IllegalStateException("Cannot check-out before the scheduled check-in date");
+        }
+
         booking.checkOut();
         bookingRepository.save(booking);
     }
