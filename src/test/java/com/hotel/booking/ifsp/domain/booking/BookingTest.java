@@ -186,4 +186,15 @@ class BookingTest {
                 .isInstanceOf(IllegalStateException.class)
                 .hasMessage("Cannot check-out a booking that has not been checked-in");
     }
+
+    @Test
+    @DisplayName("Should throw IllegalStateException when trying to complete (check-out) a PENDING booking directly")
+    void shouldThrowExceptionWhenCompletingPendingBooking() {
+        Booking booking = Booking.create(new GuestId(UUID.randomUUID()), RoomCategory.STANDARD,
+                new Period(LocalDate.now().plusDays(1), LocalDate.now().plusDays(3)));
+
+        assertThatThrownBy(booking::complete)
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessage("Cannot complete a booking that has not been checked-in");
+    }
 }
