@@ -103,6 +103,7 @@ class BookingTest {
     void shouldThrowExceptionWhenCancellingCompleted() {
         Booking booking = Booking.create(new GuestId(UUID.randomUUID()), RoomCategory.STANDARD,
                 new Period(LocalDate.now().plusDays(1), LocalDate.now().plusDays(3)));
+        booking.checkIn();
         booking.complete();
 
         assertThatThrownBy(booking::cancel)

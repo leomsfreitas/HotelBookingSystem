@@ -102,6 +102,7 @@ class BookingCancelServiceTest {
     @Test
     @DisplayName("Should throw IllegalStateException when trying to cancel a completed booking through the service")
     void shouldThrowIllegalStateExceptionOnCancellingCompletedBooking() {
+        booking.checkIn();
         booking.complete();
         when(bookingRepository.findById(booking.getId())).thenReturn(Optional.of(booking));
 

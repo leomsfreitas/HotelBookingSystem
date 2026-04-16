@@ -131,6 +131,7 @@ class BookingQueryServiceTest {
     @Test
     @DisplayName("Should return COMPLETED status when completed booking is queried")
     void shouldReturnCompletedStatusWhenCompletedBookingIsQueried() {
+        booking.checkIn();
         booking.complete();
 
         BookingDetails result = bookingQueryService.findBooking(booking.getId());

@@ -120,6 +120,7 @@ class BookingUpdateServiceTest {
     @Test
     @DisplayName("Should throw RoomNotAvailableException when trying to update a completed booking")
     void shouldThrowIllegalStateExceptionWhenUpdatingCompletedBooking() {
+        booking.checkIn();
         booking.complete();
         Period newPeriod = new Period(LocalDate.now().plusDays(10), LocalDate.now().plusDays(15));
 

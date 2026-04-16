@@ -50,6 +50,7 @@ class BookingCancelServiceFunctionalTest {
         BookingId bookingId = BookingId.generate();
         Booking booking = Booking.create(new GuestId(UUID.randomUUID()), RoomCategory.STANDARD,
                 new Period(LocalDate.now().plusDays(1), LocalDate.now().plusDays(2)));
+        booking.checkIn();
         booking.complete();
 
         when(bookingRepository.findById(bookingId)).thenReturn(Optional.of(booking));
