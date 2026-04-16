@@ -127,4 +127,17 @@ class BookingCheckInOutServiceTest {
 
         verify(bookingRepository, times(1)).save(any());
     }
+
+    @Test
+    @DisplayName("Should ensure check-out is only possible for CHECKED_IN bookings")
+    void shouldOnlyAllowCheckOutForCheckedInBookings() {
+        when(bookingRepository.findById(booking.getId())).thenReturn(Optional.of(booking));
+
+        assertThatThrownBy(() -> service.checkOut(booking.getId()))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessage("Cannot check-out a booking that has not been checked-in");
+
+        verify(bookingRepository, never()).save(any());
+    }
+
 }
