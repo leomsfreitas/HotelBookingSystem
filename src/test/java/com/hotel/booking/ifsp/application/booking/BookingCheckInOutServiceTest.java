@@ -188,4 +188,18 @@ class BookingCheckInOutServiceTest {
         verify(bookingRepository, times(2)).save(any());
     }
 
+
+    @Test
+    @DisplayName("Should ensure status is exactly COMPLETED after successful check-out")
+    void shouldUpdateStatusToCompletedEnum() {
+        booking.checkIn();
+        when(bookingRepository.findById(booking.getId())).thenReturn(Optional.of(booking));
+        assertThat(booking.getStatus()).isEqualTo(BookingStatus.CHECKED_IN);
+
+        service.checkOut(booking.getId());
+
+        assertThat(booking.getStatus()).isSameAs(BookingStatus.COMPLETED);
+        verify(bookingRepository, times(1)).save(booking);
+    }
+
 }
