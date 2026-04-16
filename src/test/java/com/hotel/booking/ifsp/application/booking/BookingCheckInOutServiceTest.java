@@ -202,4 +202,16 @@ class BookingCheckInOutServiceTest {
         verify(bookingRepository, times(1)).save(booking);
     }
 
+    @Test
+    @DisplayName("Should throw IllegalStateException when checking in before scheduled date")
+    void shouldThrowExceptionWhenCheckingInBeforeScheduledDate() {
+        LocalDate futureDate = LocalDate.now().plusDays(2);
+        Booking bookingFuture = Booking.create(new GuestId(UUID.randomUUID()), RoomCategory.STANDARD,
+                new Period(futureDate, futureDate.plusDays(3)));
+        when(bookingRepository.findById(bookingFuture.getId())).thenReturn(Optional.of(bookingFuture));
+
+        assertThatThrownBy(() -> service.checkIn(bookingFuture.getId()))
+                .isInstanceOf(IllegalStateException.class);
+    }
+
 }
