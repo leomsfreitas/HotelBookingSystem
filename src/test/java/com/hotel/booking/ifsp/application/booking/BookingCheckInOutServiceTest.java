@@ -101,4 +101,17 @@ class BookingCheckInOutServiceTest {
         verify(bookingRepository, never()).findById(any());
         verify(bookingRepository, never()).save(any());
     }
+
+    @Test
+    @DisplayName("Should throw IllegalStateException when trying to check-in a CANCELLED booking")
+    void shouldThrowExceptionWhenCheckInCancelledBooking() {
+        booking.cancel();
+        when(bookingRepository.findById(booking.getId())).thenReturn(Optional.of(booking));
+
+        assertThatThrownBy(() -> service.checkIn(booking.getId()))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessage("Can only check-in a pending booking");
+
+        verify(bookingRepository, never()).save(any());
+    }
 }
