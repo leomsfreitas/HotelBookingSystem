@@ -140,4 +140,16 @@ class BookingCheckInOutServiceTest {
         verify(bookingRepository, never()).save(any());
     }
 
+    @Test
+    @DisplayName("Should process check-out correctly for valid CHECKED_IN reservation")
+    void shouldProcessCheckOutForCheckedInBooking() {
+        booking.checkIn();
+        when(bookingRepository.findById(booking.getId())).thenReturn(Optional.of(booking));
+
+        service.checkOut(booking.getId());
+
+        assertThat(booking.getStatus()).isEqualTo(BookingStatus.COMPLETED);
+        verify(bookingRepository).save(booking);
+    }
+
 }
