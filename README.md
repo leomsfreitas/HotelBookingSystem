@@ -2,43 +2,100 @@
 
 Sistema de gerenciamento de reservas de hotel com backend em Spring Boot e frontend em React.
 
+> Projeto desenvolvido para a disciplina de **Verificação, Validação e Teste de Software (VVTS)** e reutilizado na disciplina de **Gestão e Configuração de Software (GCSW)**, onde foi aplicada a infraestrutura de conteinerização com Docker Compose.
+
 ## Estrutura do projeto
 
 ```
 HotelSystem/
-├── src/                  → código-fonte do backend (Spring Boot)
-├── frontend/             → interface web (React)
-├── hotel.db              → banco de dados SQLite (gerado automaticamente)
+├── src/                          → código-fonte do backend (Spring Boot)
+├── frontend/                     → interface web (React + Vite)
+├── Dockerfile                    → imagem do backend
+├── docker-compose.yml            → orquestração dos serviços
+├── .env.example                  → variáveis de ambiente necessárias
 └── pom.xml
 ```
 
 ---
 
-## Pré-requisitos
+## Rodar com Docker (recomendado)
+
+### Pré-requisitos
+
+- Docker e Docker Compose instalados
+
+### Passos
+
+```bash
+cp .env.example .env
+# edite o .env com os valores desejados
+docker compose up --build
+```
+
+O sistema sobe com três serviços:
+
+| Serviço | Descrição | Porta |
+|---------|-----------|-------|
+| `db` | Banco de dados PostgreSQL | 5432 |
+| `backend` | API REST (Spring Boot) | 8080 |
+| `frontend` | Interface web (React + Nginx) | 80 |
+
+Acesse o sistema em `http://localhost`.
+
+O banco já sobe com dados mockados via Flyway. Use as credenciais abaixo para acessar:
+
+```
+Email: admin@hotel.com
+Senha: admin123
+```
+
+---
+
+## Rodar localmente (sem Docker)
+
+### Pré-requisitos
 
 - Java 21
 - Maven
 - Node.js 18+ e npm
+- PostgreSQL rodando localmente
 
----
+### Backend
 
-## Backend
+Configure as variáveis de ambiente ou crie um banco com as credenciais padrão do `application.properties`:
 
-### Configurar e rodar
+```
+banco: hoteldb
+usuário: hotel
+senha: hotel123
+```
 
 ```bash
 mvn spring-boot:run
 ```
 
-O servidor sobe na porta `8080`. O banco de dados `hotel.db` é criado automaticamente na raiz do projeto na primeira execução. O Flyway executa automaticamente a migration `V1_mock_data.sql`, populando o banco com dados de exemplo.
+O servidor sobe na porta `8080`. O Flyway executa automaticamente a migration `V1_mock_data.sql`, criando as tabelas e populando o banco com dados de exemplo.
 
-### Rodar os testes
+### Testes
 
 ```bash
 mvn test
 ```
 
-### Endpoints
+### Frontend
+
+```bash
+cd frontend
+cp .env.example .env.local
+npm install
+npm run dev
+```
+
+Acesse em `http://localhost:5173`.
+
+---
+
+## Endpoints
 
 Todos os endpoints exigem autenticação via JWT, exceto os de registro e login.
 
@@ -108,45 +165,4 @@ Categorias disponíveis: `STANDARD`, `DELUXE`, `SUITE`.
 Com o backend rodando, acesse:
 ```
 http://localhost:8080/api/v1/api-docs
-```
-
----
-
-## Frontend
-
-### Configurar e rodar
-
-```bash
-cd frontend
-cp .env.example .env.local
-npm install
-npm run dev
-```
-
-Acesse em `http://localhost:5173`.
-
-O arquivo `.env.local` define o endereço do backend:
-```
-VITE_API_URL=http://localhost:8080
-```
-
-Para mais detalhes, consulte o [README do frontend](frontend/README.md).
-
----
-
-## Rodar tudo junto
-
-```bash
-# Terminal 1 — backend
-mvn spring-boot:run
-
-# Terminal 2 — frontend
-cd frontend && npm run dev
-```
-
-O banco já sobe com dados mockados. Use as credenciais abaixo para acessar:
-
-```
-Email: admin@hotel.com
-Senha: admin123
 ```

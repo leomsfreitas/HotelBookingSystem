@@ -32,11 +32,9 @@ public class BookingEntity {
     @Column(name = "room_category", nullable = false)
     private RoomCategory roomCategory;
 
-    @Convert(converter = LocalDateConverter.class)
     @Column(name = "check_in", nullable = false)
     private LocalDate checkIn;
 
-    @Convert(converter = LocalDateConverter.class)
     @Column(name = "check_out", nullable = false)
     private LocalDate checkOut;
 
