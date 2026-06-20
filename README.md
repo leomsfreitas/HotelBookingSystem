@@ -1,82 +1,82 @@
 # HotelSystem
 
-Sistema de gerenciamento de reservas de hotel com backend em Spring Boot e frontend em React.
+Hotel booking management system with a Spring Boot backend and a React frontend.
 
-> Projeto desenvolvido para a disciplina de **Verificação, Validação e Teste de Software (VVTS)** e reutilizado na disciplina de **Gestão e Configuração de Software (GCSW)**, onde foi aplicada a infraestrutura de conteinerização com Docker Compose.
+> Project developed for the **Software Verification, Validation, and Testing (VVTS)** course and later reused in the **Software Management and Configuration (GCSW)** course, where Docker Compose containerization infrastructure was applied.
 
-## Estrutura do projeto
+## Project structure
 
 ```
 HotelSystem/
-├── src/                          → código-fonte do backend (Spring Boot)
-├── frontend/                     → interface web (React + Vite)
-├── Dockerfile                    → imagem do backend
-├── docker-compose.yml            → orquestração dos serviços
-├── .env.example                  → variáveis de ambiente necessárias
+├── src/                          → backend source code (Spring Boot)
+├── frontend/                     → web interface (React + Vite)
+├── Dockerfile                    → backend image
+├── docker-compose.yml            → service orchestration
+├── .env.example                  → required environment variables
 └── pom.xml
 ```
 
 ---
 
-## Rodar com Docker (recomendado)
+## Running with Docker (recommended)
 
-### Pré-requisitos
+### Prerequisites
 
-- Docker e Docker Compose instalados
+- Docker and Docker Compose installed
 
-### Passos
+### Steps
 
 ```bash
 cp .env.example .env
-# edite o .env com os valores desejados
+# edit .env with the desired values
 docker compose up --build
 ```
 
-O sistema sobe com três serviços:
+The system starts with three services:
 
-| Serviço | Descrição | Porta |
+| Service | Description | Port |
 |---------|-----------|-------|
-| `db` | Banco de dados PostgreSQL | 5432 |
-| `backend` | API REST (Spring Boot) | 8080 |
-| `frontend` | Interface web (React + Nginx) | 80 |
+| `db` | PostgreSQL database | 5432 |
+| `backend` | REST API (Spring Boot) | 8080 |
+| `frontend` | Web interface (React + Nginx) | 80 |
 
-Acesse o sistema em `http://localhost`.
+Access the system at `http://localhost`.
 
-O banco já sobe com dados mockados via Flyway. Use as credenciais abaixo para acessar:
+The database already starts populated with mock data via Flyway. Use the credentials below to log in:
 
 ```
 Email: admin@hotel.com
-Senha: admin123
+Password: admin123
 ```
 
 ---
 
-## Rodar localmente (sem Docker)
+## Running locally (without Docker)
 
-### Pré-requisitos
+### Prerequisites
 
 - Java 21
 - Maven
-- Node.js 18+ e npm
-- PostgreSQL rodando localmente
+- Node.js 18+ and npm
+- PostgreSQL running locally
 
 ### Backend
 
-Configure as variáveis de ambiente ou crie um banco com as credenciais padrão do `application.properties`:
+Configure the environment variables, or create a database with the default credentials from `application.properties`:
 
 ```
-banco: hoteldb
-usuário: hotel
-senha: hotel123
+database: hoteldb
+user: hotel
+password: hotel123
 ```
 
 ```bash
 mvn spring-boot:run
 ```
 
-O servidor sobe na porta `8080`. O Flyway executa automaticamente a migration `V1_mock_data.sql`, criando as tabelas e populando o banco com dados de exemplo.
+The server starts on port `8080`. Flyway automatically runs the `V1_mock_data.sql` migration, creating the tables and populating the database with sample data.
 
-### Testes
+### Tests
 
 ```bash
 mvn test
@@ -91,78 +91,78 @@ npm install
 npm run dev
 ```
 
-Acesse em `http://localhost:5173`.
+Access at `http://localhost:5173`.
 
 ---
 
 ## Endpoints
 
-Todos os endpoints exigem autenticação via JWT, exceto os de registro e login.
+All endpoints require JWT authentication, except for registration and login.
 
-O token deve ser enviado no header:
+The token must be sent in the header:
 ```
 Authorization: Bearer <token>
 ```
 
-#### Autenticação
+#### Authentication
 
-| Método | Rota | Descrição |
+| Method | Route | Description |
 |--------|------|-----------|
-| POST | `/api/v1/register` | Cadastrar novo usuário |
-| POST | `/api/v1/authenticate` | Login — retorna o token JWT |
+| POST | `/api/v1/register` | Register a new user |
+| POST | `/api/v1/authenticate` | Login — returns the JWT token |
 
-Corpo do registro:
+Registration body:
 ```json
 {
-  "name": "João",
-  "lastname": "Silva",
-  "email": "joao@email.com",
-  "password": "senha123"
+  "name": "John",
+  "lastname": "Smith",
+  "email": "john@email.com",
+  "password": "password123"
 }
 ```
 
-Corpo do login:
+Login body:
 ```json
 {
-  "username": "joao@email.com",
-  "password": "senha123"
+  "username": "john@email.com",
+  "password": "password123"
 }
 ```
 
-#### Hóspedes
+#### Guests
 
-| Método | Rota | Descrição |
+| Method | Route | Description |
 |--------|------|-----------|
-| GET | `/api/v1/guests` | Listar hóspedes |
-| POST | `/api/v1/guests` | Cadastrar hóspede |
+| GET | `/api/v1/guests` | List guests |
+| POST | `/api/v1/guests` | Register a guest |
 
-#### Reservas
+#### Bookings
 
-| Método | Rota | Descrição |
+| Method | Route | Description |
 |--------|------|-----------|
-| GET | `/api/v1/bookings` | Listar todas as reservas |
-| GET | `/api/v1/bookings/{id}` | Buscar reserva por ID |
-| POST | `/api/v1/bookings` | Criar reserva |
-| PUT | `/api/v1/bookings/{id}` | Atualizar reserva |
-| PATCH | `/api/v1/bookings/{id}/cancel` | Cancelar reserva |
-| PATCH | `/api/v1/bookings/{id}/checkin` | Realizar check-in |
-| PATCH | `/api/v1/bookings/{id}/checkout` | Realizar check-out |
+| GET | `/api/v1/bookings` | List all bookings |
+| GET | `/api/v1/bookings/{id}` | Find booking by ID |
+| POST | `/api/v1/bookings` | Create a booking |
+| PUT | `/api/v1/bookings/{id}` | Update a booking |
+| PATCH | `/api/v1/bookings/{id}/cancel` | Cancel a booking |
+| PATCH | `/api/v1/bookings/{id}/checkin` | Perform check-in |
+| PATCH | `/api/v1/bookings/{id}/checkout` | Perform check-out |
 
-Corpo para criar reserva:
+Body to create a booking:
 ```json
 {
-  "guestId": "uuid-do-hospede",
+  "guestId": "guest-uuid",
   "roomCategory": "STANDARD",
   "checkIn": "2026-05-20",
   "checkOut": "2026-05-25"
 }
 ```
 
-Categorias disponíveis: `STANDARD`, `DELUXE`, `SUITE`.
+Available categories: `STANDARD`, `DELUXE`, `SUITE`.
 
-### Documentação interativa (Swagger)
+### Interactive documentation (Swagger)
 
-Com o backend rodando, acesse:
+With the backend running, access:
 ```
 http://localhost:8080/api/v1/api-docs
 ```
